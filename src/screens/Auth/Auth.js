@@ -13,15 +13,36 @@ import {
 import React, { useEffect } from 'react';
 import { Images, FONT } from '@assets';
 import { windowHeight } from '../../styles';
-import { useSelector } from 'react-redux';
-import { httpNet } from '../../actions';
+import { useSelector,useDispatch } from 'react-redux';
+import { httpRequestGet } from '../../actions';
+import { LOGIN_SUCCESS, userURL } from '../../constants';
 const Auth = ({ navigation }) => {
-  const userData = useSelector(state => state.auth.user);
+  const token = useSelector(state => state.auth.token);
+  const dispatch = useDispatch();
   useEffect(() => {
-    if (Object.keys(userData).length !== 0) {
-      navigation.replace('MainApp');
-    } 
-  }, [userData]);
+    console.info(token)
+    if (token !== undefined){
+        jwtauth(dispatch,token)
+    }
+  }, []);
+  const jwtauth = async (dispatch,token) => {
+    try {
+      const httpHeaders = {
+        'auth-token': token.data,
+      };
+      const res = await httpRequestGet(userURL, httpHeaders)
+      console.info(res)
+      if (res.code == 1000) {
+        const userdata = res.data;
+        dispatch({ type: LOGIN_SUCCESS, data: { userdata } });
+        navigation.replace('MainApp');
+      } else {
+        dispatch({ type: LOGIN_SUCCESS, data: {} });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const gotoSignIn = () => {
     navigation.replace('SignIn');
   };

@@ -1,5 +1,5 @@
 export const Images = {
-  splash: require('./splash.png'),
+  splash: require('./pigsplash.webp'),
   googleIcon: require('./flat-color-icons_google.png'),
   product1: require('./products/item-1.png'),
   emojioneFire: require('./emojione_fire.png'),

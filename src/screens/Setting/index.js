@@ -16,29 +16,39 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { TabRouter } from 'react-navigation';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Images } from '../../assets/images';
-import { imageUrl } from '../../constants';
+import { LOGIN_SUCCESS, LOGIN_SUCCESS_TOKEN, imageUrl } from '../../constants';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('screen');
 
 export default function SettingScreen({ navigation }) {
-  const userData  = useSelector(state => state.auth.user);
-console.info(userData);
-  // const { username, last_name, profile_pic, role } = user;
-
-  const onClickLogOut = () => {
+  const dispatch = useDispatch();
+  const userData = useSelector(state => state.auth.user);
+  const removeUserData = async dispatch => {
+    try {
+      await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('user');
+    } catch (e) {
+      console.log(e);
+    }
+    dispatch({ type: LOGIN_SUCCESS_TOKEN, data: {} });
+    dispatch({ type: LOGIN_SUCCESS, data: {} });
+    navigation.replace('Auth')
+  };
+  const onClickLogOut = async () => {
     Alert.alert(
       '',
-      'Are you sure?',
+      '你确定要登出吗？',
       [
         {
-          text: 'Yes',
-          onPress: () => navigation.navigate('SignIn'),
+          text: '是',
+          onPress: ()=>removeUserData(dispatch),
         },
         {
-          text: 'No',
+          text: '否',
         },
       ],
       {
@@ -49,58 +59,8 @@ console.info(userData);
 
   return (
     <SafeAreaView style={styles.PrivacyPolicy}>
-      <View style={styles.Group642}>
-        <Image
-          style={styles.Group379}
-          source={Images.back}
-          onTouchEnd={e => {
-            {
-              e.stopPropagation();
-              navigation.goBack();
-            }
-          }}
-        />
-        <Text style={styles.Txt432}>Setting</Text>
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          marginTop: 30,
-          marginLeft: 10,
-          alignItems: 'center',
-        }}>
-        {/* <Image
-          source={{
-            uri: profile_pic
-              ? `${imageUrl}profile_pic/${profile_pic}`
-              : Images.user1,
-          }}
-          style={{
-            alignSelf: 'center',
-            width: 100,
-            height: 100,
-            borderRadius: 50,
-          }}
-        /> */}
-        {/* {Avtar != '' ? <Image
-          style={styles.userImg}
-          source={{ uri: Avtar }}
-        /> : <FontAwesome5
-          name="user-alt"
-          size={150}
-          style={styles.userImg}
-          backgroundColor="#fff"
-          color="#2e64e5"
-        />} */}
-        <Text style={styles.userName}>{userData.user.Name != '' ? userData.user.Name : "猪智通用户"}</Text>
 
-        <View style={{ flexDirection: 'column', marginLeft: 30 }}>
-          {/* <Text style={{ fontWeight: 'bold', fontSize: 24, color: 'white' }}>
-            {username}
-          </Text> */}
-          {/* <Text style={{ fontSize: 24, color: 'white' }}>{last_name}</Text> */}
-        </View>
-      </View>
+
       <View
         style={{
           width: '100%',
@@ -109,22 +69,20 @@ console.info(userData);
           marginTop: 30,
         }}></View>
       <View
-        style={{ flexDirection: 'row', marginTop: 30 }}
+        style={{ flexDirection: 'row', marginTop: 30, borderWidth: 0.5, borderRadius: 10 }}
         onTouchEnd={() =>
           navigation.navigate('EditProfile', {
             // accountType: role,
+            user: userData.user_id
           })
         }>
-        <Image source={require('./i_profile.png')} />
-        <Text style={{ color: 'white', alignSelf: 'center', marginLeft: 30 }}>
-          Edit Profile
+        <MaterialIcons name="emoji-emotions" size={50} color="#000" />
+        <Text style={{ color: '#000', alignSelf: 'center', marginLeft: 30 }}>
+          修改个人信息
         </Text>
-        <Image
-          source={require('./i_right.png')}
-          style={{ position: 'absolute', right: 0 }}
-        />
+        <MaterialIcons name="arrow-forward-ios" size={50} color="#000" style={{ position: 'absolute', right: 0 }} />
       </View>
-      <View
+      {/* <View
         style={{ flexDirection: 'row', marginTop: 30 }}
         onTouchEnd={() =>
           navigation.navigate('AccountSetting', {
@@ -140,6 +98,36 @@ console.info(userData);
           source={require('./i_right.png')}
           style={{ position: 'absolute', right: 0 }}
         />
+      </View> */}
+
+
+
+      {/* <View
+        style={{
+          position: 'absolute',
+          left: 30,
+          paddingHorizontal: 30,
+          paddingVertical: 10,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+        onTouchEnd={() => onClickLogOut()}>
+        <Text style={{ color: '#000', marginLeft: 5 }}>Log out</Text>
+      </View> */}
+      <View
+        style={{
+          flexDirection: 'row', marginTop: 30,
+          backgroundColor: '#1455F5',
+          borderRadius: 10,
+
+        }}
+        onTouchEnd={() => onClickLogOut()}>
+        <MaterialIcons name="logout" size={50} color="#fff" />
+        <Text style={{ color: 'white', alignSelf: 'center', marginLeft: 30, fontSize: 20 }}>
+          登出
+        </Text>
+        <MaterialIcons name="arrow-forward-ios" size={50} color="#fff" style={{ position: 'absolute', right: 0 }} />
+
       </View>
       {/* {role == 1 && (
         <View
@@ -213,22 +201,7 @@ console.info(userData);
           </View>
         </>
       )} */}
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 70,
-          left: 30,
-          backgroundColor: '#1455F5',
-          borderRadius: 10,
-          paddingHorizontal: 30,
-          paddingVertical: 10,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
-        onTouchEnd={() => onClickLogOut()}>
-        <MaterialIcons name="logout" size={20} color="white" />
-        <Text style={{ color: 'white', marginLeft: 5 }}>Log out</Text>
-      </View>
+
     </SafeAreaView>
   );
 }
@@ -238,7 +211,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     padding: 20,
-    backgroundColor: 'rgba(0,0,0,1)',
+    backgroundColor: '#fff',
     width: width,
     height: height,
   },
@@ -259,6 +232,6 @@ const styles = StyleSheet.create({
     // fontFamily: "Poppins, sans-serif",
     fontWeight: '600',
     lineHeight: 30,
-    color: 'rgba(255, 255, 255, 1)',
+    color: '#000',
   },
 });

@@ -9,10 +9,11 @@ import {
 import React, { useEffect, useState } from 'react';
 import styles, { windowHeight } from '../../styles';
 import { Images, Fonts } from '@assets';
-import { signup, forgotPassword } from '../../actions';
+import { signup, forgotPassword, httpRequestPost } from '../../actions';
 import Toast from 'react-native-simple-toast';
 import RadioGroup from 'react-native-radio-buttons-group';
 import { useDispatch } from 'react-redux';
+import { httpHeaders, registerURL } from '../../constants';
 
 const signingRadioButtonData = [
   {
@@ -129,35 +130,44 @@ const SignUp = ({ navigation }) => {
   const gotoSignIn = () => {
     navigation.replace('SignIn');
   };
+  const signup = async (dispatch) => {
+    try {
+      const params = {
+        username,
+        email: email,
+        password: password,
+        repassword,
+      };
+      const res = await httpRequestPost(registerURL, params, httpHeaders)
+      if (res.code == 1000) {
+        Toast.showWithGravity(
+          '注册成功',
+          Toast.SHORT,
+          Toast.BOTTOM,
+        );
+        navigation.navigate('SignIn');
+      } else {
+        Toast.showWithGravity(
+          '注册失败',
+          Toast.SHORT,
+          Toast.BOTTOM,
+        );
+
+      }
+    } catch (error) {
+      console.log(error);
+      Toast.showWithGravity(
+        '服务繁忙',
+        Toast.SHORT,
+        Toast.BOTTOM,
+      );
+
+    }
+  };
 
   const onSignUp = () => {
     if (validation()) {
-      dispatch(
-        signup(
-          username,
-          password,
-          email,
-          repassword,
-          res => {
-            if (res) {
-              if (res.code == 1000) {
-                Toast.showWithGravity(
-                  '注册成功',
-                  Toast.SHORT,
-                  Toast.BOTTOM,
-                );
-                navigation.navigate('SignIn');
-              } else {
-                Toast.showWithGravity(
-                  res.msg || '注册失败',
-                  Toast.SHORT,
-                  Toast.BOTTOM,
-                );
-              }
-            }
-          },
-        ),
-      );
+        signup(dispatch)
     }
   };
   return (

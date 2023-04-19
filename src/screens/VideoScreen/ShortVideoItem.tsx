@@ -16,7 +16,7 @@ import AnimatedHeartView from './AnimatedHeartView';
 // 连续点击阈值 连续两次点击间隔小于阈值视为双击
 const CLICK_THRESHOLD = 200;
 
-const TEST_VIDEO = 'http://192.168.2.5:19787/api/v1/video/8820220121280003.mp4';
+const TEST_VIDEO = 'https://api.cjic.ga:444/api/v1/video/8820220121280003.mp4';
 
 export interface ShortVideoItemProps extends ViewProps {
   paused: boolean;

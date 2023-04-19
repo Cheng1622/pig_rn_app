@@ -15,108 +15,153 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import * as Progress from 'react-native-progress';
-import SweetAlert from 'react-native-sweet-alert';
-import Toast from 'react-native-simple-toast';
-import { connect, useSelector } from 'react-redux';
-import { calcTime, ConvertToUrlForm, httpHeaders } from '../../util';
-import { accountUrl, imageUrl, postUrl } from '../../constants';
-import { ActivityIndicator } from 'react-native-paper';
-import { removeUserData } from '../../actions';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { black } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { httpRequestGet } from '../../actions';
+import { BASEURL, collectsURL, followURL, httpHeaders, listarticleURL, LOGIN_SUCCESS, userURL } from '../../constants';
+import XFFlatList from '../../components/HomeFlatList';
+import { windowHeight } from '../../styles';
 
-export default function ({ navigation, route, accountType }) {
-    const userData = useSelector(state => state.auth);
+export default function ({ navigation }) {
+
+    const dispatch = useDispatch();
+    const user = useSelector(state => state.auth.user);
+    const token = useSelector(state => state.auth.token);
+    const [collect, setCollect] = useState([]);
+    const [follow, setFollow] = useState([]);
+    const [act, setAct] = useState([]);
+    const [fan, setFan] = useState(0);
+
     useEffect(() => {
-        // if (Object.keys(userData).length == 0){
-        //     SweetAlert.showAlertWithOptions({
-        //         style: 'error',
-        //         title: '很抱歉，您的帐户数据已被删除。请再次登录',
-        //     });
-        //     navigation.navigate('SignIn');
-        // }
-        console.info(userData)
-    }, []);
-    
-    const logout = () => {
-        removeUserData();
-        navigation.replace('Auth');
+        getData()
+        getcollect(dispatch, token)
+        getfollow(dispatch, token)
+    }, [user]);
+
+    const getcollect = async (dispatch, token) => {
+        try {
+            const httpHeaders = {
+                'auth-token': token.data,
+            };
+            const res = await httpRequestGet(`${collectsURL}?userId=${user.userdata?.user_id}`, httpHeaders)
+            console.info(res)
+            if (res.code == 1000) {
+                const coll = res.data;
+                setCollect(coll)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const getfollow = async (dispatch, token) => {
+        try {
+            const httpHeaders = {
+                'auth-token': token.data,
+            };
+            const res = await httpRequestGet(`${followURL}?userId2=${user.userdata?.user_id}`, httpHeaders)
+            console.info(res)
+            if (res.code == 1000) {
+                const coll = res.data;
+                setFollow(coll)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getData = async () => {
+        try {
+            const res = await httpRequestGet(`${listarticleURL}?authorId=${user.userdata.user_id}`, httpHeaders);
+            console.info(user.userdata.user_id)
+            if (res.code == 1000) {
+                const coll = res.data;
+                setAct(coll)
+            }
+        } catch (error) {
+            console.log(error);
+
+        }
     };
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-            <ScrollView
-                style={styles.container}
-                contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
-                showsVerticalScrollIndicator={false}>
-                {<Image
-                    style={styles.userImg}
-                    source={require('../../assets/images/users/default-avatar.png')}
-                />}
-                {/* <Text style={styles.userName}>{userData.Username = '' ? userData.Username : "猪智通用户"}</Text>
-                <Text style={styles.userName}>{userData.Username != '' ? userData.data.Username : "猪智通用户"}</Text>
-                <Text style={styles.userName}>{userData.Username != '' ? userData.Username : "猪智通用户"}</Text>
-                <Text style={styles.userName}>{userData.Username != '' ? userData.Username : "猪智通用户"}</Text>
-                <Text style={styles.userName}>{userData.Username != '' ? userData.Username : "猪智通用户"}</Text>
-                <Text style={styles.userName}>{userData.Username != '' ? userData.Username : "猪智通用户"}</Text> */}
-                {/* <Text>{route.params ? route.params.userId : user.uid}</Text> */}
-                <Text style={styles.aboutUser}>
-                    {userData.Username}
-                </Text>
-                {/* <View style={styles.userBtnWrapper}>
-                    {route.params ? (
-                        <>
-                            <TouchableOpacity style={styles.userBtn} onPress={() => { }}>
-                                <Text style={styles.userBtnTxt}>Message</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.userBtn} onPress={() => { }}>
-                                <Text style={styles.userBtnTxt}>Follow</Text>
-                            </TouchableOpacity>
-                        </>
-                    ) : (
-                        <>
-                            <TouchableOpacity
-                                style={styles.userBtn}
-                                onPress={() => {
-                                    navigation.navigate('EditProfile');
-                                }}>
-                                <Text style={styles.userBtnTxt}>Edit</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.userBtn} onPress={() => logout()}>
-                                <Text style={styles.userBtnTxt}>Logout</Text>
-                            </TouchableOpacity>
-                        </>
-                    )}
-                </View> */}
+            <View style={{ height: 300 }}>
+                <ScrollView
+                    contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {user.userdata?.avatar != '' ?
+                        <Image
+                            style={styles.userImg}
+                            source={{ uri: BASEURL + user.userdata?.avatar }}
+                        /> :
+                        <Image
+                            style={styles.userImg}
+                            source={require('../../assets/images/users/default-avatar.png')}
+                        />}
+                    <Text style={styles.userName}>
+                        {user.userdata?.username != '' ? user.userdata?.username : '慧养猪用户'}
+                    </Text>
+                    {/* <View style={styles.userBtnWrapper}>
+{route.params ? (
+    <>
+        <TouchableOpacity style={styles.userBtn} onPress={() => { }}>
+            <Text style={styles.userBtnTxt}>Message</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.userBtn} onPress={() => { }}>
+            <Text style={styles.userBtnTxt}>Follow</Text>
+        </TouchableOpacity>
+    </>
+) : (
+    <>
+        <TouchableOpacity
+            style={styles.userBtn}
+            onPress={() => {
+                navigation.navigate('EditProfile');
+            }}>
+            <Text style={styles.userBtnTxt}>Edit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.userBtn} onPress={() => logout()}>
+            <Text style={styles.userBtnTxt}>Logout</Text>
+        </TouchableOpacity>
+    </>
+)}
+</View> */}
 
-                <View style={styles.userInfoWrapper}>
-                    <View style={styles.userInfoItem}>
-                        {/* <Text style={styles.userInfoTitle}>{posts.length}</Text> */}
-                        {/* <Text style={styles.userInfoSubTitle}>文章111</Text> */}
-                    </View>
-                    <View style={styles.userInfoItem}>
-                        {/* <Text style={styles.userInfoTitle}>10,000</Text> */}
-                        <Text style={styles.userInfoSubTitle}>点赞</Text>
-                    </View>
-                    <View style={styles.userInfoItem}>
-                        {/* <Text style={styles.userInfoTitle}>100</Text> */}
-                        <Text style={styles.userInfoSubTitle}>收藏</Text>
-                    </View>
-                </View>
+                    <View style={styles.userInfoWrapper}>
+                        <View style={styles.userInfoItem}>
+                            <Text style={styles.userInfoTitle}>{act != null ? Object.keys(act).length : 0}</Text>
+                            <Text style={styles.userInfoSubTitle}>文章</Text>
+                        </View>
 
-                {/* {posts.map((item) => (
-              <PostCard key={item.id} item={item} onDelete={handleDelete} />
-            ))} */}
-            </ScrollView>
+                        <View style={styles.userInfoItem}>
+                            <Text style={styles.userInfoTitle}>{collect != null ? Object.keys(collect).length : 0}</Text>
+                            <Text style={styles.userInfoSubTitle}>收藏</Text>
+                        </View>
+                        <View style={styles.userInfoItem}>
+                            <Text style={styles.userInfoTitle}>{follow != null ? Object.keys(follow).length : 0}</Text>
+                            <Text style={styles.userInfoSubTitle}>关注</Text>
+                        </View>
+                        <View style={styles.userInfoItem}>
+                            <Text style={styles.userInfoTitle}>{user.userdata?.fan}</Text>
+                            <Text style={styles.userInfoSubTitle}>粉丝</Text>
+                        </View>
+                    </View>
+
+                    {/* {posts.map((item) => (
+<PostCard key={item.id} item={item} onDelete={handleDelete} />
+))} */}
+
+                </ScrollView>
+            </View>
+            <View style={{ backgroundColor: '#f5f5f5', height: 10 }} />
+            <XFFlatList
+                authorId={user.userdata?.user_id}
+                navigation={navigation}
+            />
         </SafeAreaView>
     );
 }
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        padding: 20,
-    },
+
     userImg: {
         height: 150,
         width: 150,
@@ -169,7 +214,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     userInfoSubTitle: {
-        fontSize: 12,
+        fontSize: 16,
         color: '#666',
         textAlign: 'center',
     },

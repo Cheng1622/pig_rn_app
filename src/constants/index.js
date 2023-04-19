@@ -1,22 +1,33 @@
-export const BASEURL = 'http://192.168.2.5:19787/api/v1/';
+export const BASEURL = 'https://api.cjic.ga:444/';
 
-export const communityURL = `${BASEURL}community`;//首页板块
-export const postlistcommunityURL = `${BASEURL}postlistcommunity`;//首页新闻
+export const registerURL = `register`;
+export const loginURL = `login`;
+export const userURL = `user/`; // 验证用户
+export const infoURL = `user/info`; // 修改信息
+export const authorURL = `user/`; // 查看作者
+export const collectsURL = `collects`;   // 查询收藏
+export const newcollectsURL = `collects/new/`;   // 收藏
+export const uncollectsURL = `collects/`;   // 取消收藏
+export const followURL = `follow`;   // 查询收藏
+export const newfollowURL = `follow/new/`;   // 收藏
+export const unfollowURL = `follow/`;   // 取消收藏
+export const communityURL = `community`;   // 查询分类
+export const communityidURL = `community/`;   // 查询分类名
 
-// export default{
-// 	BASEURL:BASEURL,
-// detailUrl:`${BASEURL}/news_info/national?content_id=`, //国内新闻详情
-// foreignUrl:`${BASEURL}/news/foreign?tag=`, // 国际新闻列表
-// foreignDetailUrl:`${BASEURL}/news_info/foreign?url=`, // 国际新闻详情
-// editFavoriteApi:`${BASEURL}/news_info/editFavorite`,	//添加取消收藏
-// loadFavoriteDataUrl:`${BASEURL}/news_info/collection?flag=`,	//获取收藏文章列表
-// loginUrl:`${BASEURL}/users/login`,//登录
-// registerUrl:`${BASEURL}/users/register`,//注册
-// searchUrl:`${BASEURL}/news_info/search?q=`,//搜索
-// subscribeUrl:`${BASEURL}/users/getSubscribe?user_id=`,//获取订阅信息
-// editSubscribeUrl:`${BASEURL}/users/editSubscribe`,		//订阅和取消订阅
+export const postarticleURL = `article/`;  // 发布文章
+export const putarticleURL = `article/`;  // 修改文章
+export const deletearticleURL = `article/`;  // 删除文章
+export const getarticleURL = `article/`;  // 查看文章
 
-// }
+export const listarticleURL = `article/postlist`;  // 显示文章列表
+export const list1articleURL = `article/postlist2`;  // 显示最热/新
+export const videoarticleURL = `article/video/`;  // 视频
+
+export const listURL = `list`;  // 行情
+export const listlastURL = `listlast`;  // 行情
+export const listidURL = `list/`;  // 行情
+export const likeURL = `like/`;  // 点赞
+
 
 export const httpHeaders = {
   Accept: 'application/json',

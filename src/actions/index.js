@@ -2,18 +2,7 @@ import axios from 'axios';
 import Toast from 'react-native-simple-toast';
 import {
   BASEURL,
-  LOGIN_SUCCESS,
-  FORGOT_PASSWORD_USER,
-  ADD_TO_CART,
-  REMOVE_USER_DATA,
-  LOGIN_SUCCESS_USER,
-  LOGIN_SUCCESS_TOKEN,
 } from '../constants';
-
-const header = {
-  'Content-Type': 'application/json',
-};
-
 
 const instance = axios.create({
   baseURL: BASEURL,
@@ -40,10 +29,10 @@ instance.interceptors.response.use(function (response) {
   return Promise.reject(error);
 });
 
-export const httpRequestPost = async (api, params, header) => {
+export const httpRequestPost = async (api, params, httpHeaders) => {
   return new Promise((resolve, reject) => {
     instance.post(api, JSON.stringify(params), {
-      headers: header,
+      headers: httpHeaders,
     })
       .then(res => {
         resolve(res.data)
@@ -54,10 +43,39 @@ export const httpRequestPost = async (api, params, header) => {
       })
   })
 }
-export const httpRequestGet = async (api, header) => {
+export const httpRequestGet = async (api, httpHeaders) => {
   return new Promise((resolve, reject) => {
     instance.get(api, {
-      headers: header,
+      headers: httpHeaders,
+    })
+      .then(res => {
+        resolve(res.data)
+      })
+      .catch(error => {
+        console.log('httpRequestGet error: ', JSON.stringify({ api, error }));
+        reject(error)
+      })
+  })
+}
+export const httpRequestPut = async (api, params, httpHeaders) => {
+  return new Promise((resolve, reject) => {
+    instance.put(api, JSON.stringify(params), {
+      headers: httpHeaders,
+    })
+      .then(res => {
+        resolve(res.data)
+      })
+      .catch(error => {
+        console.log('httpRequestPost error: ', JSON.stringify({ api, params, error }));
+        reject(error)
+      })
+  })
+}
+
+export const httpRequestDelete = async (api, httpHeaders) => {
+  return new Promise((resolve, reject) => {
+    instance.delete(api, {
+      headers: httpHeaders,
     })
       .then(res => {
         resolve(res.data)
@@ -69,94 +87,91 @@ export const httpRequestGet = async (api, header) => {
   })
 }
 
-// 身份
-export const getUser = payload => ({ type: LOGIN_SUCCESS, payload });
-
-export const loginSuccess = user => dispatch => {
-  dispatch({ type: LOGIN_SUCCESS, data: user });
-};
-
-export const logoutAction = () => dispatch => {
-  dispatch({ type: LOGIN_SUCCESS, data: {} });
-};
-
-export const signup = (username, password, email, repassword, callback) =>
-  async dispatch => {
-    const params = {
-      username: username,
-      password: password,
-      email: email,
-      repassword: repassword,
-    };
-    httpRequestPost('register', params, header)
-      .then(res => {
-        callback(res);
-      })
-      .catch(err => {
-        console.log(err);
-      })
-  };
-
-export const signin = (email, password, callback) =>
-  async dispatch => {
-    const params = {
-      email: email,
-      password: password,
-    };
-    httpRequestPost('login', params, header)
-      .then(res => {
-        if (res.code == 1000) {
-          data = res.data;
-          dispatch({ type: LOGIN_SUCCESS_TOKEN, data: { data } });
-        } else {
-          dispatch({ type: LOGIN_SUCCESS_TOKEN, data: {} });
-        }
-        callback(res);
-      })
-      .catch(err => {
-        console.log(err);
-      })
-  };
-
-export const jwtauth = (token, callback) =>
-  async dispatch => {
-    const header = {
-      'auth-token': token,
-    };
-    httpRequestGet('profile',  header)
-      .then(res => {
-        if (res.code == 1000) {
-          data = res.data;
-          dispatch({ type: LOGIN_SUCCESS, data: { data } });
-        } else {
-          dispatch({ type: LOGIN_SUCCESS, data: {} });
-        }
-        callback(res);
-      })
-      .catch(err => {
-        console.log(err);
-      })
-  };
 
 
+// // 身份
+// export const signup = (username, password, email, repassword, callback) =>
+//   async dispatch => {
+//     const params = {
+//       username: username,
+//       password: password,
+//       email: email,
+//       repassword: repassword,
+//     };
+//     httpRequestPost(registerURL, params, httpHeaders)
+//       .then(res => {
+//         callback(res);
+//       })
+//       .catch(err => {
+//         console.log(err);
+//       })
+//   };
 
-// 新闻
+// export const signin = (email, password, callback) =>
+//   async dispatch => {
+//     const params = {
+//       email: email,
+//       password: password,
+//     };
+//     httpRequestPost(loginURL, params, httpHeaders)
+//       .then(res => {
+//         if (res.code == 1000) {
+//           data = res.data;
+//           dispatch({ type: LOGIN_SUCCESS_TOKEN, data: { data } });
+//         } else {
+//           dispatch({ type: LOGIN_SUCCESS_TOKEN, data: {} });
+//         }
+//         callback(res);
+//       })
+//       .catch(err => {
+//         console.log(err);
+//       })
+//   };
 
-export const getcommunity = (callback) =>
-  async () => {
-    httpRequestGet('community', header)
-      .then(res => res.json())
-      .then(res => {
-        callback(res);
-        console.info(res)
-      })
-      .catch(err => {
-        console.log(err);
-      })
-  };
-// export const getnews = (community, pageSize, page,callback) =>
+// // export const jwtauth = (token, callback) =>
+// //   async dispatch => {
+// //     const httpHeaders = {
+// //       'auth-token': token,
+// //     };
+// //     httpRequestGet(userURL,  httpHeaders)
+// //       .then(res => {
+// //         if (res.code == 1000) {
+// //           data = res.data;
+// //           dispatch({ type: LOGIN_SUCCESS, data: { data } });
+// //         } else {
+// //           dispatch({ type: LOGIN_SUCCESS, data: {} });
+// //         }
+// //         callback(res);
+// //       })
+// //       .catch(err => {
+// //         console.log(err);
+// //       })
+// //   };
+
+//   const jwtauth = async dispatch => {
+//     try {
+//       const httpHeaders = {
+//         'auth-token': token.data,
+//       };
+//       const res = await httpRequestGet(userURL, httpHeaders)
+//       if (res.code != 1000) {
+//         const userdata = res.data;
+//         dispatch({ type: LOGIN_SUCCESS, data: { userdata } });
+//         navigation.replace('MainApp');
+//       } else {
+//         dispatch({ type: LOGIN_SUCCESS, data: {} });
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+
+
+// // 新闻
+
+// export const getcommunity = (callback) =>
 //   async () => {
-//     httpRequestGet(`postlistcommunity?community=${community}&pageSize=${pageSize}&pageSize=${page}`, params = null, header)
+//     httpRequestGet('community', httpHeaders)
 //       .then(res => res.json())
 //       .then(res => {
 //         callback(res);
@@ -166,23 +181,35 @@ export const getcommunity = (callback) =>
 //         console.log(err);
 //       })
 //   };
+// // export const getnews = (community, pageSize, page,callback) =>
+// //   async () => {
+// //     httpRequestGet(`postlistcommunity?community=${community}&pageSize=${pageSize}&pageSize=${page}`, params = null, header)
+// //       .then(res => res.json())
+// //       .then(res => {
+// //         callback(res);
+// //         console.info(res)
+// //       })
+// //       .catch(err => {
+// //         console.log(err);
+// //       })
+// //   };
 
 
 
-  export const getnews = (community, pageSize, page, callback) =>
-  async () => {
+//   // export const getnews = (community, pageSize, page, callback) =>
+//   // async () => {
    
-    httpRequestGet(`postlistcommunity?community=${community}&pageSize=${pageSize}&pageSize=${page}`, header)
-      .then(res => {
-        if (res.code == 1000) {
-          data = res.data;
-          console.info(data)
-        } else {
-        }
-        callback(res);
-      })
-      .catch(err => {
-        console.log(err);
-      })
-  };
+//   //   httpRequestGet(`postlistcommunity?community=${community}&pageSize=${pageSize}&pageSize=${page}`, header)
+//   //     .then(res => {
+//   //       if (res.code == 1000) {
+//   //         data = res.data;
+//   //         console.info(data)
+//   //       } else {
+//   //       }
+//   //       callback(res);
+//   //     })
+//   //     .catch(err => {
+//   //       console.log(err);
+//   //     })
+//   // };
 

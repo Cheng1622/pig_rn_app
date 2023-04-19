@@ -11,10 +11,11 @@ import {
 import Toast from 'react-native-simple-toast';
 import styles, { windowHeight } from '../../styles';
 import { Images } from '@assets';
-import { addUserData, jwtauth, signin } from '../../actions';
+import { addUserData, httpRequestGet, httpRequestPost, jwtauth, signin } from '../../actions';
 import { useSelector, useDispatch } from 'react-redux';
 import { forgotPassword } from '../../actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { httpHeaders, loginURL, LOGIN_SUCCESS, LOGIN_SUCCESS_TOKEN, userURL } from '../../constants';
 
 const SignIn = ({ navigation }, props) => {
   const dispatch = useDispatch();
@@ -24,11 +25,11 @@ const SignIn = ({ navigation }, props) => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  useEffect(() => {
-    if (Object.keys(user).length !== 0) {
-      navigation.replace('MainApp');
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (Object.keys(user).length !== 0) {
+  //     navigation.replace('MainApp');
+  //   }
+  // }, [user]);
 
   const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
 
@@ -65,38 +66,72 @@ const SignIn = ({ navigation }, props) => {
       return false;
     }
   };
+
+
+  const signin = async (dispatch) => {
+    try {
+      const params = {
+        email: email,
+        password: password,
+      };
+      const res = await httpRequestPost(loginURL, params, httpHeaders)
+      if (res.code == 1000) {
+        const data = res.data;
+        dispatch({ type: LOGIN_SUCCESS_TOKEN, data: { data } });
+        jwtauth(dispatch, data)
+      } else {
+        dispatch({ type: LOGIN_SUCCESS_TOKEN, data: {} });
+       
+      }
+    } catch (error) {
+      console.log(error);
+      Toast.showWithGravity(
+        '服务繁忙',
+        Toast.SHORT,
+        Toast.BOTTOM,
+      );
+    }
+  };
+
+
+  const jwtauth = async (dispatch, token) => {
+    try {
+      console.info(token)
+      const httpHeaders = {
+        'auth-token': token,
+      };
+      const res = await httpRequestGet(userURL, httpHeaders)
+      console.info(res)
+      if (res.code == 1000) {
+        const userdata = res.data;
+        dispatch({ type: LOGIN_SUCCESS, data: { userdata } });
+        Toast.showWithGravity(
+          '登录成功',
+          Toast.SHORT,
+          Toast.BOTTOM,
+        );
+        navigation.replace('MainApp');
+      } else {
+        dispatch({ type: LOGIN_SUCCESS, data: {} });
+        Toast.showWithGravity(
+          '登录失败',
+          Toast.SHORT,
+          Toast.BOTTOM,
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      Toast.showWithGravity(
+        '服务繁忙',
+        Toast.SHORT,
+        Toast.BOTTOM,
+      );
+    }
+  };
+
   const onSignIn = async () => {
     if (validation()) {
-      dispatch(
-        signin(email, password, res => {
-          if (res.code == 1000) {
-            dispatch(
-              jwtauth(res.data, res => {
-                // console.log(res);
-                if (res.code == 1000) {
-                  Toast.showWithGravity(
-                    '登录成功',
-                    Toast.SHORT,
-                    Toast.BOTTOM,
-                  );
-                  navigation.replace('MainApp');
-                } else {
-                  Toast.showWithGravity(
-                    res.msg || '登录失败',
-                    Toast.SHORT,
-                    Toast.BOTTOM,
-                  );
-                }
-              }))
-          } else {
-            Toast.showWithGravity(
-              res.msg || '登录失败',
-              Toast.SHORT,
-              Toast.BOTTOM,
-            );
-          }
-        }),
-      );
+      signin(dispatch)
     }
   };
   const gotoSignUp = () => {

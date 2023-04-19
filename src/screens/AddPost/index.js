@@ -1,231 +1,3 @@
-// import React, { useContext, useState } from 'react';
-// import { View, Text, StyleSheet, Alert, ActivityIndicator,TextInput,TouchableOpacity } from 'react-native';
-// import Icon from 'react-native-vector-icons/Ionicons';
-// import ImagePicker from 'react-native-image-crop-picker';
-// import { windowWidth } from '../../styles';
-// import { useSelector } from 'react-redux';
-
-
-// const AddPostScreen = () => {
-//   const user = useSelector(state => state.auth.user);
-//   const [post, setPost] = useState(null);
-
-//   const [image, setImage] = useState(null);
-//   const [uploading, setUploading] = useState(false);
-//   const [transferred, setTransferred] = useState(0);
-
-//   const takePhotoFromCamera = () => {
-//     ImagePicker.openCamera({
-//       width: 1200,
-//       height: 780,
-//       cropping: true,
-//     }).then((image) => {
-//       console.log(image);
-//       const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
-//       setImage(imageUri);
-//     });
-//   };
-
-//   const choosePhotoFromLibrary = () => {
-//     ImagePicker.openPicker({
-//       width: 2000,
-//       height: 1600,
-//       cropping: true,
-//     }).then((image) => {
-//       console.log(image);
-//       const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
-//       setImage(imageUri);
-//     });
-//   };
-
-//   const submitPost = async () => {
-//     const imageUrl = await uploadImage();
-//     console.log('Image Url: ', imageUrl);
-//     console.log('Post: ', post);
-
-//     // firestore()
-//     //   .collection('posts')
-//     //   .add({
-//     //     userId: user.uid,
-//     //     post: post,
-//     //     postImg: imageUrl,
-//     //     postTime: firestore.Timestamp.fromDate(new Date()),
-//     //     likes: null,
-//     //     comments: null,
-//     //   })
-//     //   .then(() => {
-//     //     console.log('Post Added!');
-//     //     Alert.alert(
-//     //       'Post published!',
-//     //       'Your post has been published Successfully!',
-//     //     );
-//     //     setPost(null);
-//     //   })
-//     //   .catch((error) => {
-//     //     console.log('Something went wrong with added post to firestore.', error);
-//     //   });
-//   }
-
-
-//   const uploadImage = async () => {
-//     if (image == null) {
-//       return null;
-//     }
-
-//     const uploadUri = image;
-//     let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
-
-//     // Add timestamp to File Name
-//     const extension = filename.split('.').pop();
-//     const name = filename.split('.').slice(0, -1).join('.');
-//     filename = name + Date.now() + '.' + extension;
-
-//     setUploading(true);
-//     setTransferred(0);
-
-//     // const storageRef = storage().ref(`photos/${filename}`);
-//     // const task = storageRef.putFile(uploadUri);
-
-//     // Set transferred state
-//     task.on('state_changed', (taskSnapshot) => {
-//       console.log(
-//         `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
-//       );
-
-//       setTransferred(
-//         Math.round(taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) *
-//         100,
-//       );
-//     });
-
-//     try {
-//       await task;
-
-//       // const url = await storageRef.getDownloadURL();
-
-//       setUploading(false);
-//       setImage(null);
-
-//       //  Alert.alert(
-//       //    'Image uploaded!',
-//       //    'Your image has been uploaded to the Firebase Cloud Storage Successfully!',
-//       //  );
-//       return url;
-
-//     } catch (e) {
-//       console.log(e);
-//       return null;
-//     }
-
-//   };
-
-
-
-
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.InputWrapper}>
-//         {image != null ? <Image style={styles.AddImage} source={{ uri: image }} /> : null}
-//         <TextInput
-//         style={styles.InputField}
-//           placeholder="What Is on Your Mind?"
-//           multiline
-//           numberOfLine={4}
-//           value={post}
-//           onChangeText={(content) => setPost(content)}
-//         />
-//         {uploading ? (
-//           <View style={styles.StatusWrapper}>
-//             <Text>{transferred} % Completed!</Text>
-//             <ActivityIndicator size="large" color="#0000ff" />
-//           </View>
-//         ) : (
-//           <TouchableOpacity style={styles.SubmitBtn} onPress={submitPost}>
-//             <Text style={styles.SubmitBtnTexts}>Post</Text>
-//           </TouchableOpacity>
-//         )}
-
-//       </View>
-
-//       <View
-//         buttonColor='#9b59b6'
-//         title="TakePhoto"
-//         onPress={takePhotoFromCamera}>
-//         <Icon name="camera-outline" style={styles.actionButtonIcon} />
-//       </View>
-//       <View
-//         buttonColor='#3498db'
-//         title="Choose Photo"
-//         onPress={choosePhotoFromLibrary}>
-//         <Icon name="md-image-outline"
-//           style={styles.actionButtonIcon} />
-//       </View>
-
-
-
-//     </View>
-//   )
-// }
-
-// export default AddPostScreen;
-// const styles = StyleSheet.create({
-//   container: {
-//     backgroundColor: '#f9fafd',
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     marginBottom: 34
-
-//   },
-//   text: {
-
-//     fontSize: 20,
-//     color: '#333333',
-//   },
-
-//   actionButtonIcon: {
-//     fontSize: 20,
-//     height: 22,
-//     color: '#000',
-//   },
-//   InputWrapper: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     width: windowWidth,
-//     backgroundColor: "#2e64e515",
-//   },
-//   InputField:{
-//     justifyContent: "center",
-//     alignItems: "center",
-//     fontSize: 24,
-//     textAlign: "center",
-//     // width:90%,
-//     marginBottom: 15,
-//   },
-//   AddImage:{
-//     width: windowWidth,
-//     height: 250,
-//     marginBottom: 15,
-//   },
-//   StatusWrapper:{
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   SubmitBtn:{
-//     justifyContent: "center",
-//     backgroundColor: "#2e64e515",
-//     padding: 10 ,
-//   },
-//   SubmitBtnText:{
-//     fontSize: 18,
-//     fontFamily: 'Lato-Bold',
-//     fontWeight: "bold",
-//     color: "#2e64e5",
-//   }
-// });
-
-
 import React, { useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
@@ -241,9 +13,11 @@ import {
   Alert,
   ToastAndroid,
 } from 'react-native';
-import SweetAlert from 'react-native-sweet-alert';
+import ModalDropdown from 'react-native-modal-dropdown';
+import SelectDropdown from 'react-native-select-dropdown';
 import { connect } from 'react-redux';
 import { ConvertToUrlForm } from '@util';
+import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
 import Tags from 'react-native-tags';
 import AudioRecord from 'react-native-audio-record';
 import DocumentPicker from 'react-native-document-picker';
@@ -252,9 +26,9 @@ import Video from 'react-native-video';
 import { Images } from '../../assets/images';
 import { useSelector, useDispatch } from 'react-redux';
 import Feather from 'react-native-vector-icons/Feather';
-import { httpHeaders } from '../../constants';
+import { LOGIN_SUCCESS, httpHeaders, userURL } from '../../constants';
 import { windowHeight, windowWidth } from '../../styles';
-import { jwtauth } from '../../actions';
+import { httpRequestGet } from '../../actions';
 
 const options = {
   sampleRate: 16000, // default 44100
@@ -271,59 +45,39 @@ function AddPostScreen({ navigation, route }) {
   const dispatch = useDispatch();
 
   const textInputRef = React.useRef();
+  const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [mode, setMode] = useState(0); // 0: create, 1: edit
   const [audio, setAudio] = useState('');
   const [video, setVideo] = useState('');
   const [image, setImage] = useState('');
   const [tags, setTags] = useState([]);
-  const [user, setUser] = useState([])
-  useEffect(() => {
-    jwtauth(userData)
-  }, []);
+  const [user, setUser] = useState([]);
+  const [bArr, setBArr] = useState('');
 
-  const MyTagInput = () => (
-    <Tags
-      initialText=""
-      textInputProps={{
-        placeholder: '+ Add Tags',
-        placeholderTextColor: '#000',
-      }}
-      style={{ backgroundColor: '#fff', paddingVertical: 3 }}
-      initialTags={tags}
-      onChangeTags={tags => {
-        setTags(tags);
-      }}
-      onTagPress={(index, tagLabel, event, deleted) => {
-        setTags(tags.filter((tag, i) => i !== index));
-      }}
-      containerStyle={{
-        backgroundColor: '#fff',
-        borderColor: '#fff',
-        borderTopWidth: 0.5,
-      }}
-      inputStyle={{
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        color: '#fff',
-        placeholderTextColor: '#fff',
-      }}
-      renderTag={({ tag, index, onPress, deleteTagOnPress, readonly }) => (
-        <TouchableOpacity
-          style={{
-            borderRadius: 15,
-            backgroundColor: '#fff',
-            paddingVertical: 5,
-            paddingHorizontal: 15,
-            margin: 5,
-          }}
-          key={`${tag}-${index}`}
-          onPress={onPress}>
-          <Text style={{ color: '#fff' }}>{tag} &nbsp;x</Text>
-        </TouchableOpacity>
-      )}
-    />
-  );
+  // useEffect(() => {
+  //   if (token !== undefined) {
+  //     jwtauth(dispatch, token)
+  //   }
+  // }, []);
+  // const jwtauth = async (dispatch, token) => {
+  //   try {
+  //     const httpHeaders = {
+  //       'auth-token': token,
+  //     };
+  //     const res = await httpRequestGet(userURL, httpHeaders)
+  //     console.info(res)
+  //     if (res.code == 1000) {
+  //       const userdata = res.data;
+  //       dispatch({ type: LOGIN_SUCCESS, data: { userdata } });
+  //       navigation.replace('MainApp');
+  //     } else {
+  //       dispatch({ type: LOGIN_SUCCESS, data: {} });
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   useEffect(() => {
     textInputRef.current?.focus();
@@ -332,7 +86,79 @@ function AddPostScreen({ navigation, route }) {
       setPostContent(route.params?.content);
     }
   }, [route]);
+  // function onPressSigningRadioButton(radioButtonArray) {
+  //   console.log(radioButtonArray)
+  //   setSigningRadioButtons(radioButtonArray);
+  //   // radioButtonArray.map(item => {
+  //   //   if (item.selected) {
+  //   //    console.info(item)
 
+  //   //   } else {
+  //   //     setSigning(false);
+  //   //   }
+  //   // });
+  //   // setSigningRadioButtons(radioButtonArray);
+  // }
+  const MM = [
+    ["国内新闻"],
+    ["生猪期货"],
+    ["国际新闻"],
+    ["行业点评"],
+    ["原创分析"],
+    ["每日猪评"],
+    ["展会报道"],
+    ["种猪资讯"],
+    ["种猪行业新闻"],
+    ["种猪企业"],
+    ["种猪企业访谈"],
+    ["名企推荐"],
+    ["猪场建设"],
+    ["繁育管理"],
+    ["饲养管理"],
+    ["猪场管理"],
+    ["批次化生产"],
+    ["养猪大会"],
+    ["行情分析"],
+    ["玉米价格"],
+    ["豆粕价格"],
+    ["猪粮比"],
+    ["饲料供需"],
+    ["饲料分析"],
+    ["生猪价格"],
+    ["仔猪价格"],
+    ["猪肉价格"],
+    ["各省市猪价"],]
+  const tabArr = [
+    [58, "国内新闻"],
+    [263, "生猪期货"],
+    [147, "国际新闻"],
+    [148, "行业点评"],
+    [149, "原创分析"],
+    [70, "每日猪评"],
+    [118, "展会报道"],
+    [170, "种猪资讯"],
+    [166, "种猪行业新闻"],
+    [143, "种猪企业"],
+    [173, "种猪企业访谈"],
+    [221, "名企推荐"],
+    [31, "猪场建设"],
+    [32, "繁育管理"],
+    [91, "饲养管理"],
+    [35, "猪场管理"],
+    [233, "批次化生产"],
+    [261, "养猪大会"],
+    [81, "行情分析"],
+    [68, "玉米价格"],
+    [67, "豆粕价格"],
+    [257, "猪粮比"],
+    [256, "饲料供需"],
+    [267, "饲料分析"],
+    [63, "生猪价格"],
+    [64, "仔猪价格"],
+    [65, "猪肉价格"],
+    [115, "各省市猪价"],]
+
+  console.info(tabArr[bArr]?.[0])
   const onClickPost = () => {
     console.log('onclick post....');
     if (postContent.length < 30) {
@@ -341,7 +167,7 @@ function AddPostScreen({ navigation, route }) {
       //     text1: 'You have to type at least 30 characters',
       //   });
       ToastAndroid.show(
-        'You have to type at least 30 characters',
+        '请您至少写30字',
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
       );
@@ -371,26 +197,26 @@ function AddPostScreen({ navigation, route }) {
           if (responseData['error'] == false) {
             navigation.navigate('HomeScreen', { createPost: true });
           } else {
-            SweetAlert.showAlertWithOptions({
-              title: responseData.msg,
-              subTitle: '',
-              confirmButtonTitle: 'Ok',
-              confirmButtonColor: '#000',
-              style: 'error',
-              cancellable: true,
-            });
+            // SweetAlert.showAlertWithOptions({
+            //   title: responseData.msg,
+            //   subTitle: '',
+            //   confirmButtonTitle: 'Ok',
+            //   confirmButtonColor: '#000',
+            //   style: 'error',
+            //   cancellable: true,
+            // });
           }
         })
         .catch(error => {
           console.log('Error', error);
-          SweetAlert.showAlertWithOptions({
-            title: 'Sorry, Failed retry.',
-            subTitle: '',
-            confirmButtonTitle: 'Ok',
-            confirmButtonColor: '#000',
-            style: 'error',
-            cancellable: true,
-          });
+          // SweetAlert.showAlertWithOptions({
+          //   title: 'Sorry, Failed retry.',
+          //   subTitle: '',
+          //   confirmButtonTitle: 'Ok',
+          //   confirmButtonColor: '#000',
+          //   style: 'error',
+          //   cancellable: true,
+          // });
         });
     } else {
       let details = {
@@ -419,26 +245,26 @@ function AddPostScreen({ navigation, route }) {
           if (responseData['error'] == false) {
             navigation.navigate('HomeScreen', { createPost: true });
           } else {
-            SweetAlert.showAlertWithOptions({
-              title: responseData.msg,
-              subTitle: '',
-              confirmButtonTitle: 'Ok',
-              confirmButtonColor: '#000',
-              style: 'error',
-              cancellable: true,
-            });
+            // SweetAlert.showAlertWithOptions({
+            //   title: responseData.msg,
+            //   subTitle: '',
+            //   confirmButtonTitle: 'Ok',
+            //   confirmButtonColor: '#000',
+            //   style: 'error',
+            //   cancellable: true,
+            // });
           }
         })
         .catch(error => {
           console.log('Error', error);
-          SweetAlert.showAlertWithOptions({
-            title: 'Sorry, Failed retry.',
-            subTitle: '',
-            confirmButtonTitle: 'Ok',
-            confirmButtonColor: '#000',
-            style: 'error',
-            cancellable: true,
-          });
+          // SweetAlert.showAlertWithOptions({
+          //   title: 'Sorry, Failed retry.',
+          //   subTitle: '',
+          //   confirmButtonTitle: 'Ok',
+          //   confirmButtonColor: '#000',
+          //   style: 'error',
+          //   cancellable: true,
+          // });
         });
     }
     // navigation.navigate('Home', { createPost: true });
@@ -577,7 +403,7 @@ function AddPostScreen({ navigation, route }) {
     <SafeAreaView style={styles.PrivacyPolicy}>
       <View style={styles.Group642}>
         <TouchableOpacity
-            style={styles.Group379}
+          style={styles.Group379}
           onPress={() => navigation.goBack()}>
           <Feather
             name="arrow-left"
@@ -619,8 +445,52 @@ function AddPostScreen({ navigation, route }) {
           flexDirection: 'column',
           color: '#fff',
           justifyContent: 'flex-start',
-         
+
         }}>
+        <View style={{
+          flex: 1,
+          justifyContent: 'space-around',
+          flexDirection: 'row',
+          width: '100%',
+          color: '#000',
+          backgroundColor: '#fff',
+          textAlignVertical: 'top',
+          borderColor: '#646464',
+          borderBottomWidth: 0.5,
+          height: 40
+        }}
+        >
+          <Text style={{
+            left: 0,
+             position: "absolute",
+            // color: '#000',
+            alignItems:"center",
+            justifyContent:"center",
+            backgroundColor: '#fff',
+            textAlignVertical: 'top',
+            // bottom:20
+            // borderStyle:'solid',
+          }}>您选择的是</Text>
+          <SelectDropdown
+            buttonStyle={styles.select}
+            buttonTextStyle={styles.text_color_white}
+            defaultButtonText={'请选择发布的板块'}
+            // defaultValueByIndex={0}
+            data={MM}
+            onSelect={(selectedItem, index) => {
+              setBArr(index);
+              // console.info(selectedItem, index)
+            }}
+            buttonTextAfterSelection={(selectedItem, index) => {
+              // console.info(selectedItem, index)
+              return selectedItem;
+            }}
+            rowTextForSelection={(item, index) => {
+              // console.info(item,index)
+              return item;
+            }}
+          />
+        </View>
         <TextInput
           multiline={true}
           numberOfLines={1}
@@ -629,9 +499,25 @@ function AddPostScreen({ navigation, route }) {
             color: '#000',
             backgroundColor: '#fff',
             textAlignVertical: 'top',
-            borderStyle:'dotted',
-            borderColor:'#2e64e5',
-            height:windowHeight/4
+            // borderStyle:'solid',
+            borderColor: '#646464',
+            borderBottomWidth: 0.5,
+            height: 40
+          }}
+          placeholder="写出你的题目吧"
+          selectionColor={'#2e64e5'}
+          value={postTitle}
+          onChangeText={e => setPostTitle(e)}
+        />
+        <TextInput
+          multiline={true}
+          numberOfLines={1}
+          ref={textInputRef}
+          style={{
+            color: '#000',
+            backgroundColor: '#fff',
+            textAlignVertical: 'top',
+            height: windowHeight / 4
           }}
           placeholder="写出你的想法和问题吧"
           selectionColor={'#2e64e5'}
@@ -672,7 +558,7 @@ function AddPostScreen({ navigation, route }) {
             </View>
           )}
         </View>
-        <MyTagInput />
+        {/* <MyTagInput /> */}
         <View
           style={{
             display: 'flex',
@@ -713,6 +599,16 @@ function AddPostScreen({ navigation, route }) {
             <Feather name="video" size={30} color="#000" />
           </TouchableOpacity>
         </View>
+        {/* <RadioGroup
+              layout="row"
+              containerStyle={{
+                alignSelf: 'flex-start',
+                paddingTop: 15,
+                paddingRight: 15,
+              }}
+              // radioButtons={signingRadioButtonData}
+              onPress={onPressSigningRadioButton}
+            /> */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -767,6 +663,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingLeft: 3,
     paddingTop: 1,
+  },
+  select: {
+    borderColor: 'white',
+    right: 0,
+    position: 'absolute'
   },
 });
 

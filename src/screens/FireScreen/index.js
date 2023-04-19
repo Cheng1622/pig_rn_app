@@ -1,4 +1,25 @@
 
+// const FireScreen = ({ navigation, route, accountType, props, initialPage = 1, pageSize = 15, }) => {
+
+
+
+// }
+// export default FireScreen;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import {
   FlatList,
@@ -15,9 +36,9 @@ import {
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import { useSelector } from 'react-redux';
-import { httpRequestGet, httpRequestPost } from '../actions';
-import { authorURL, getarticleURL, httpHeaders, listarticleURL, postlistcommunityURL } from '../constants';
-import { windowWidth } from '../styles';
+import { httpRequestGet, httpRequestPost } from '../../actions';
+import { authorURL, getarticleURL, httpHeaders, list1articleURL, postlistcommunityURL } from '../../constants';
+import { windowWidth } from '../../styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
@@ -31,19 +52,16 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
  *   pageSize: number
  *   refreshControlProps?: RefreshControlProps
  */
-const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, requestCode, initialPage = 1, pageSize = 15, refreshControlProps }) => {
+const FireScreen = ({ navigation, initialPage = 1, pageSize = 15, refreshControlProps }) => {
   // 初始化 state
-
+  
   const user = useSelector(state => state.auth.user);
   const [data, setData] = useState([])
   const [page, setPage] = useState(initialPage);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
-  const [nodata, setNodata] = useState(false);
 
-  const [name, setName] = useState('');
-  const [avatar, setAvatar] = useState('');
   // 当 page 发生变化时，重新获取数据
   useEffect(() => {
     fetchData();
@@ -54,36 +72,27 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
     if (!hasMoreData || isLoading) {
       return;
     }
-
+    
     setIsLoading(true);
     try {
-      const newData = await httpRequestGet(`${listarticleURL}?authorId=${authorId != undefined ? authorId : 0}&keyword=${keyword != undefined ? keyword : ''}&communityId=${requestCode != undefined ? requestCode : 0}&pageSize=${pageSize}&pageNum=${page}`, httpHeaders);
-      console.info(newData)
-      if (newData.code = 1000) {
+      const newData = await httpRequestGet(`${list1articleURL}?order=hot&pageSize=${pageSize}&pageNum=${page}`,httpHeaders);
+      if (newData.code != 1000) {
+        return
+      }
+      console.info(page)
 
-        if (newData.data == null) {
-          // 如果返回的数据少于 pageSize，说明没有更多数据了
-          setHasMoreData(false);
-          setIsLoading(false)
-          setNodata(true)
-          Toast.showWithGravity(
-            '没有更多数据了',
-            Toast.SHORT,
-            Toast.BOTTOM,
-          );
-          return emptyComponent
-        }
-        setData([...data, ...newData.data]);
+      if (newData.data == null) {
+        // 如果返回的数据少于 pageSize，说明没有更多数据了
+        setHasMoreData(false);
         Toast.showWithGravity(
-          '加载成功',
+          '没有更多数据了',
           Toast.SHORT,
           Toast.BOTTOM,
         );
+        return
       }
-
-      setPage(page + 1);
-      setIsLoading(false)
-      console.info(newData)
+      setData([...data, ...newData.data]);
+      console.info(newData.data)
     } catch (error) {
       console.log(error);
       Toast.showWithGravity(
@@ -101,14 +110,15 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
     }
 
     setIsRefreshing(true);
-    setPage(initialPage);
-    setHasMoreData(false);
+    setPage(initialPage + 1);
+    setHasMoreData(true);
 
     try {
-      const newData = await httpRequestGet(`${listarticleURL}?authorId=${authorId != undefined ? authorId : 0}&keyword=${keyword != undefined ? keyword : ''}&communityId=${requestCode != undefined ? requestCode : 0}&pageSize=${pageSize}&pageNum=${initialPage}`, httpHeaders);
+      const newData = await httpRequestGet(`${list1articleURL}?order=hot&pageSize=${pageSize}&pageNum=${initialPage}`,httpHeaders);
+      console.info(newData)
       if (newData.code = 1000) {
         Toast.showWithGravity(
-          '刷新成功',
+          '加载成功',
           Toast.SHORT,
           Toast.BOTTOM,
         );
@@ -117,7 +127,7 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
     } catch (error) {
       console.log(error);
       Toast.showWithGravity(
-        '刷新失败',
+        '加载失败',
         Toast.SHORT,
         Toast.BOTTOM,
       );
@@ -125,37 +135,12 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
 
     setIsRefreshing(false);
   };
-  const emptyComponent = () => {
-    return <View style={{
-      height: 100,
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
-      <Text style={{
-        fontSize: 16
-      }}>没有更多数据了</Text>
-    </View>
-  }
+
   // 自定义分割线
   const renderItemSeparatorComponent = ({ }) => (
-    <View style={{ backgroundColor: '#f5f5f5', height: 10 }} />
+    <View style={{ height: 1, backgroundColor: '#e6e6e6' }} />
   );
-  const userData = async (author_id) => {
-    try {
-      const userData = await httpRequestGet(authorURL + author_id, httpHeaders);
-      if (userData.code = 1000) {
-        console.info(userData)
-        setAvatar(userData.data.avatar)
-        setName(userData.data.username)
-      }
 
-    } catch (error) {
-      console.info(error)
-    }
-  }
-  const _onLongPress=()=>{
-
-  }
   // 渲染每个 item
   const renderItemWithIndex = ({ item, index }) => {
     let isOnePic = item._post.isimage
@@ -163,17 +148,12 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
     let isThreePic = item._post.isimage3
     // 判断是否是视频布局
     let isVideo = item._post.isvideo
-    let author_id = item._post.author_id
-    if (author_id != 0) {
-      userData(author_id)
-    }
+
     // console.info(item._post)
     if (isOnePic == 1) {
       return (
         <TouchableOpacity
           onPress={() => navigation.navigate('NewDetail', { id: item._post.id, community_id: item._post.community_id })}
-          onLongPress={_onLongPress}
-          delayLongPress={100}
           style={styles.item}
           activeOpacity={.8}>
           <View style={{ width: windowWidth * .63, height: 120, justifyContent: 'space-between' }}>
@@ -189,6 +169,9 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
           </View>
           <Image source={{ uri: item._post.image1 }} style={{ width: windowWidth * .4, height: 90 }} />
         </TouchableOpacity>
+
+
+
       );
     }
 
@@ -201,8 +184,6 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
       return (
         <TouchableOpacity
           onPress={() => navigation.navigate('NewDetail', { id: item._post.id, community_id: item._post.community_id })}
-          onLongPress={_onLongPress}
-          delayLongPress={100}
           style={styles.picItem}
           activeOpacity={.8}>
           <View style={{ justifyContent: 'space-between' }}>
@@ -234,8 +215,6 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
       return (
         <TouchableOpacity
           onPress={() => navigation.navigate('VideoDetail', { id: item._post.id, community_id: item._post.community_id })}
-          onLongPress={_onLongPress}
-          delayLongPress={100}
           style={styles.picItem}
           activeOpacity={.8}
         >
@@ -258,8 +237,6 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
     return (
       <TouchableOpacity
         style={styles.picItem}
-        onLongPress={_onLongPress}
-        delayLongPress={100}
         activeOpacity={.8}
         onPress={() => navigation.navigate('NewDetail', { id: item._post.id, community_id: item._post.community_id })}
       >
@@ -270,22 +247,7 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <View style={{ flexDirection: 'row', }}>
-              {item._post.news_source != '' ?
-                <Text style={{ marginRight: 16 }}>{item._post.news_source}</Text>
-                : <>
-                 {avatar != '' ?
-                    <Image
-                        style={styles.userImg}
-                        source={{ uri: BASEURL + avatar }}
-                    /> :
-                    <Image
-                        style={styles.userImg}
-                        source={require('../assets/images/users/default-avatar.png')}
-                    />}
-                  <Text style={{ marginRight: 16 }}>{name}</Text>
-                </>
-              }
-
+              <Text style={{ marginRight: 16 }}>{item._post.news_source}</Text>
               {/* <Text style={{ marginRight: 6 }}>{item.replyCount}跟帖</Text> */}
             </View>
           </View>
@@ -302,7 +264,7 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
       <FlatList
         data={data}
         renderItem={renderItemWithIndex}
-        keyExtractor={(item, index) => index.toString()}
+        // keyExtractor={(item) => item.id}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -310,29 +272,18 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
           // {...refreshControlProps}
           />
         }
-        ListEmptyComponent={emptyComponent}
         onEndReachedThreshold={0.1}
         onEndReached={fetchData}
         getItemLayout={(data, index) => ({ length: 40, offset: (40 + 1) * index + 50, index })}
         ItemSeparatorComponent={renderItemSeparatorComponent}
         ListFooterComponent={isLoading ? (
-          <View style={{
-            height: 100,
-            flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start',
-          }}>
-            <ActivityIndicator size="small" />
-            <Text
-              style={{
-                fontSize: 16,
-                textAlign: 'center',
-                textAlignVertical: 'center',
-              }}
-            >
-              加载中...
-            </Text>
-          </View>
+          <ActivityIndicator size="large" />
         ) : (
-          !hasMoreData && nodata ? emptyComponent : null
+          !hasMoreData && (
+            <View>
+              {!data.length ? noDataComponent : null}
+            </View>
+          )
         )
         }
       />
@@ -342,7 +293,7 @@ const XFFlatList = ({ navigation, route, accountType, props, authorId, keyword, 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#F8F8F8'
   },
   item: {
     flexDirection: 'row',
@@ -352,12 +303,6 @@ const styles = StyleSheet.create({
   },
   picItem: {
     padding: 7
-  },
-  userImg: {
-    height: 20,
-    width: 20,
-    borderRadius: 75,
-    marginRight: 16
-},
+  }
 });
-export default XFFlatList;
+export default FireScreen;

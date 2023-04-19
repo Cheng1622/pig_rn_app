@@ -21,6 +21,8 @@ import AccountSetting from '../screens/AccountSetting';
 import VideoDetail from '../screens/VideoScreen/VideoDetail';
 import AddPostScreen from '../screens/AddPost';
 import SearchScreen from '../screens/SearchScreen';
+import FireScreen from '../screens/FireScreen';
+import EditProfile from '../screens/EditProfile';
 // import {Images} from '@assets';
 // import {TouchableOpacity} from 'react-native';
 // import {ProductItem} from '@components';
@@ -87,7 +89,7 @@ const navigation = props => {
           options={({ navigation, route }) => ({
             headerShown: true,
             title: route.params.userName,
-            headerTitleAlign:'center',
+            headerTitleAlign: 'center',
             headerBackTitleVisible: false,
             tabBarVisible: false,
             headerLeft: () => (
@@ -99,14 +101,52 @@ const navigation = props => {
           })}
         />
 
-        <Stack.Screen name="Setting" component={SettingScreen} />
+        <Stack.Screen name="Setting" component={SettingScreen}
+          options={({ navigation }) => ({
+            title: '设置',
+            headerTitleAlign: "center",
+            headerShown: true,
+            headerLeft: () => (
+              <Pressable
+                onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back-outline" color="#212121" size={32} />
+              </Pressable>
+            ),
+          })}
+        />
         <Stack.Screen name="AccountSetting" component={AccountSetting} />
         <Stack.Screen name="AddPost" component={AddPostScreen} />
         <Stack.Screen name="VideoDetail" component={VideoDetail} />
         <Stack.Screen name="Search" component={SearchScreen}
+        // options={({ navigation }) => ({
+        //   title: '搜索',
+        //   headerTitleAlign: "center",
+        //   headerShown: true,
+        //   headerLeft: () => (
+        //     <Pressable
+        //       onPress={() => navigation.goBack()}>
+        //       <Ionicons name="arrow-back-outline" color="#212121" size={32} />
+        //     </Pressable>
+        //   ),
+        // })}
+        />
+        <Stack.Screen name="Fire" component={FireScreen}
           options={({ navigation }) => ({
-            title: '搜索',
-            headerTitleAlign:"center",
+            title: '最热',
+            headerTitleAlign: "center",
+            headerShown: true,
+            headerLeft: () => (
+              <Pressable
+                onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back-outline" color="#212121" size={32} />
+              </Pressable>
+            ),
+          })}
+        />
+        <Stack.Screen name="EditProfile" component={EditProfile}
+          options={({ navigation }) => ({
+            title: '个人信息',
+            headerTitleAlign: "center",
             headerShown: true,
             headerLeft: () => (
               <Pressable
@@ -122,7 +162,6 @@ const navigation = props => {
         <Stack.Screen name="CheckOut" component={Checkout} />
         <Stack.Screen name="Events" component={Events} />
         <Stack.Screen name="EventDetail" component={EventDetails} />
-        <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="Favorites" component={FavoritesScreen} />
         <Stack.Screen name="EventCalendar" component={EventCalendarScreen} />
         <Stack.Screen name="ProductCheckout" component={PaymentMethodScreen} />
@@ -131,7 +170,6 @@ const navigation = props => {
         <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
         <Stack.Screen name="Store" component={StoreScreen} />
-        <Stack.Screen name="CreatePost" component={CreatePost} />
         <Stack.Screen
           name="NotificationSetting"
           component={NotificationSettingScreen}

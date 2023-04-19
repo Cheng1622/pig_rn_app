@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Progress from 'react-native-progress';
-import SweetAlert from 'react-native-sweet-alert';
 import Toast from 'react-native-toast-message';
 import { connect } from 'react-redux';
 import { calcTime, ConvertToUrlForm, httpHeaders } from '../../Util/Util';
@@ -54,13 +53,6 @@ function Home({ navigation, route, userData, accountType }) {
   onClickMore = () => {};
 
   useEffect(() => {
-    if (userData == undefined) {
-      SweetAlert.showAlertWithOptions({
-        style: 'error',
-        title: 'Sorry, your account data is removed. Sign In again.',
-      });
-      navigation.navigate('SignIn');
-    }
     getHot5();
     fetchPosts();
     getNotification();

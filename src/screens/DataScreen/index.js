@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Platform,
-    Dimensions,
     StyleSheet,
-    Text,
-    Button,
     View,
-    Alert,
-    Image,
-    ScrollView,
-    Modal,
-    TouchableOpacity,
-    StatusBar,
-    TextInput
+    ActivityIndicator
 } from 'react-native';
 import WebView from 'react-native-webview';
 import { httpRequestGet } from '../../actions';
 import Toast from 'react-native-simple-toast';
+import { httpHeaders, listlastURL } from '../../constants';
 
 const DataScreen = ({ navigation, route, accountType, props }) => {
     const [loading, setLoading] = useState(true)
@@ -27,7 +18,7 @@ const DataScreen = ({ navigation, route, accountType, props }) => {
     const getData = async () => {
         setLoading(true);
         try {
-            const newData = await httpRequestGet(`listlast`);
+            const newData = await httpRequestGet(listlastURL,httpHeaders);
             const [a] = newData.data
             setContent(a.content);
             setLoading(false)
@@ -144,7 +135,9 @@ const DataScreen = ({ navigation, route, accountType, props }) => {
     console.info(content)
     return (
         <View style={styles.container} >
-            {loading ? <Text>加载中---</Text> :
+            {loading ? (
+          <ActivityIndicator size="large" />
+        ) : 
                 <WebView
                     source={{
                         html: `

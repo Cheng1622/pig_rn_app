@@ -92,7 +92,8 @@ android {
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
-
+    aaptOptions.cruncherEnabled = false     
+    aaptOptions.useNewCruncher = false
     namespace "com.awesomeproject"
     defaultConfig {
         applicationId "com.awesomeproject"
@@ -117,6 +118,14 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+         release {
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
+        }
     }
     buildTypes {
         debug {
@@ -128,6 +137,7 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
 
@@ -169,3 +179,4 @@ dependencies {
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+

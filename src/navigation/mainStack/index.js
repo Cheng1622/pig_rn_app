@@ -92,7 +92,7 @@ const TabBarCustomButton = ({ accessibilityLabel, accessibilityState, children, 
 export const FeedStack = ({ navigation }) => (
     <Stack.Navigator>
         <Stack.Screen
-            name="猪智通"
+            name="慧养猪"
             component={HomeScreen}
             options={{
                 headerTitleAlign: 'left',
@@ -113,8 +113,8 @@ export const FeedStack = ({ navigation }) => (
                             style={styles.rightButton}
                         >
                             <FontAwesome5.Button
-                                onPress={() => navigation.navigate('Notifications')}
-                                name="bell"
+                                onPress={() => navigation.navigate('Fire')}
+                                name="fire"
                                 size={22}
                                 backgroundColor="#fff"
                                 color="#2e64e5"
@@ -145,27 +145,57 @@ export const FeedStack = ({ navigation }) => (
                 ),
             }}
         />
-        {/* <Stack.Screen
-            name="AddPost"
-            component={AddPostScreen}
+    </Stack.Navigator>
+);
+
+export const HangStack = ({ navigation }) => (
+    <Stack.Navigator>
+        <Stack.Screen
+            name="全国猪价"
+            component={DataScreen}
             options={{
-                title: '',
-                headerTitleAlign: 'center',
+                headerTitleAlign: 'left',
+                headerTitleStyle: {
+
+                    color: '#2e64e5',
+                    fontFamily: 'Kufam-SemiBoldItalic',
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                },
                 headerStyle: {
-                    backgroundColor: '#2e64e515',
-                    shadowColor: '#2e64e515',
+                    shadowColor: '#fff',
                     elevation: 0,
                 },
-                headerBackTitleVisible: false,
-                headerBackImage: () => (
-                    <View style={{ marginLeft: 15 }}>
-                        <Ionicons name="arrow-back" size={25} color="#2e64e5" />
+                headerRight: () => (
+                    <View style={styles.homeRight}>
+                        <TouchableOpacity
+                            style={styles.rightButton}
+                        >
+                            <FontAwesome5.Button
+                                onPress={() => navigation.navigate('Search')}
+                                name="search"
+                                size={22}
+                                backgroundColor="#fff"
+                                color="#2e64e5"
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.rightButton}>
+                            <FontAwesome5.Button
+                                onPress={() => navigation.navigate('AddPost')}
+                                name="plus"
+                                size={22}
+                                backgroundColor="#fff"
+                                color="#2e64e5"
+                            />
+                        </TouchableOpacity>
                     </View>
                 ),
             }}
-        /> */}
+        />
     </Stack.Navigator>
 );
+
 
 
 const MessageStack = ({ navigation }) => (
@@ -207,11 +237,25 @@ const ProfileStack = ({ navigation }) => (
                     elevation: 0,
                 },
                 headerBackTitleVisible: false,
-                headerRight: () => (
-                    <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => navigation.navigate('Setting')}>
+                headerLeft: () => (
+                    <TouchableOpacity  style={styles.rightButton} onPress={() => navigation.navigate('Setting')}>
                         <Ionicons name="settings" size={22} color="#2e64e5" />
                     </TouchableOpacity>
                 ),
+                headerRight: () => (
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('AddPost')}
+                        style={styles.rightButton}>
+                        <FontAwesome5.Button
+                            onPress={() => navigation.navigate('AddPost')}
+                            name="plus"
+                            size={22}
+                            backgroundColor="#fff"
+                            color="#2e64e5"
+                        />
+                    </TouchableOpacity>
+                ),
+
             }}
         />
         {/* <Stack.Screen
@@ -310,7 +354,7 @@ const AppStack = () => {
             />
             <Tab.Screen
                 name="Data"
-                component={DataScreen}
+                component={HangStack}
                 options={{
                     tabBarIcon: ({ focused, size }) => (
                         <View>

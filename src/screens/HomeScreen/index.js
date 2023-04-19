@@ -18,7 +18,6 @@ import {
   communityURL,
   httpHeaders
 } from '../../constants';
-import SweetAlert from 'react-native-sweet-alert';
 import Toast from 'react-native-simple-toast';
 import { connect, useSelector } from 'react-redux';
 import { accountUrl, imageUrl, postUrl } from '../../constants';
@@ -36,13 +35,7 @@ export default function ({ navigation, route, accountType, props }) {
   const [community, setCommunity] = useState([]);
   const [posts, setPosts] = useState([]);
   useEffect(() => {
-    if (Object.keys(user).length == 0) {
-      SweetAlert.showAlertWithOptions({
-        style: 'error',
-        title: '很抱歉，您的帐户数据已被删除。请再次登录',
-      });
-      navigation.replace('SignIn');
-    }
+    
   }, []);
 
   const tabArr = [
@@ -126,7 +119,7 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: 'Blue',
+    backgroundColor: '#fff',
     position: 'relative'
   },
   swiperItem: {

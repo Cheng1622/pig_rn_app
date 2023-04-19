@@ -9,26 +9,25 @@ const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
   useEffect(() => {
     setMessages([
+     
+      {
+        _id: 2,
+        text: '还好',
+        createdAt: new Date(),
+        user: {
+          _id: 1,
+          name: 'cc',
+        },
+      },
       {
         _id: 1,
-        text: 'aaaaaaaaaa',
+        text: '你的猪怎么样了',
         createdAt: new Date(),
         user: {
           _id: 2,
-          name: 'cheng',
-          avatar: '',
+          name: 'bb',
         },
       },
-      // {
-      //   _id: 2,
-      //   text: 'Hello , this is my test for a post of my social app in React Native',
-      //   createdAt: new Date(),
-      //   user: {
-      //     _id: 1,
-      //     name: 'React Native',
-      //     avatar: 'https://placeimg.com/140/140/any',
-      //   },
-      // },
     ]);
   }, []);
 

@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Progress from 'react-native-progress';
-import SweetAlert from 'react-native-sweet-alert';
 import Toast from 'react-native-simple-toast';
 import { connect, useSelector } from 'react-redux';
 import { calcTime, ConvertToUrlForm, httpHeaders } from '../../util';
@@ -45,13 +44,7 @@ export default function ({ navigation, route, accountType, props }) {
   const user = useSelector(state => state.auth.user);
   const [posts, setPosts] = useState([]);
   useEffect(() => {
-    if (Object.keys(user).length == 0) {
-      SweetAlert.showAlertWithOptions({
-        style: 'error',
-        title: '很抱歉，您的帐户数据已被删除。请再次登录',
-      });
-      navigation.replace('SignIn');
-    }
+ 
     // GetCommunitys();
   }, []);
   // const GetCommunitys = async () => {

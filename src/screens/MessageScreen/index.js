@@ -5,11 +5,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 const Messages = [
     {
         id: '1',
-        userName: 'aaaaaaaaaa',
-        userImg: '',
+        userName: 'bb',
         messageTime: '4 分钟前',
         messageText:
-            'aaaaaaaaaa',
+            '还好',
     },
     // {
     //     id: '2',
